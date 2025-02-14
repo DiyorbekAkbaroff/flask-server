@@ -1,3 +1,4 @@
+import json
 from flask import Flask, render_template, request
 
 
@@ -41,6 +42,34 @@ def calc():
         result = a * b
 
     return render_template("calc.html", a=a, b=b, result=result)
+
+
+@app.route("/register", methods=['GET', 'POST'])
+def register_view():
+    if request.method == 'GET':
+        return render_template('register.html')
+    elif request.method == 'POST':
+        form = request.form
+        
+        name = form['name']
+        username = form['username']
+        email = form['email']
+        password = form['password']
+        
+        with open('users.json') as f:
+            users: list = json.loads(f.read())
+
+            users.append({
+                'name': name,
+                'username': username,
+                'email': email,
+                'password': password
+            })
+
+        with open('users.json', 'w') as f:
+            f.write(json.dumps(users, indent=4))
+
+        return render_template('register.html')
 
 
 if __name__ == "__main__":
